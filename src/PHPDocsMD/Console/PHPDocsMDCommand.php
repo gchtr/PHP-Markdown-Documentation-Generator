@@ -104,6 +104,7 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 
         foreach($classCollection as $ns => $classes) {
             foreach($classes as $className) {
+                $docs = '';
                 $class = $this->getClassEntity($className);
 
                 if( $class->hasIgnoreTag() )
@@ -114,12 +115,16 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
                 $classLinks[$class->generateAnchor()] = $class->getName();
 
                 // generate function table
-                $tableGenerator->openTable();
+                //$tableGenerator->openTable();
                 foreach($class->getFunctions() as $func) {
-                    $tableGenerator->addFunc($func);
+                    // $tableGenerator->addFunc($func);
+                    $docs .= '### '.$func->getName().PHP_EOL;
+                    $docs .= $func->getDescription().PHP_EOL.PHP_EOL;
+                    $docs .= $func->getExample().PHP_EOL;
                 }
 
-                $docs = ($requestingOneClass ? '':'<hr /> ').PHP_EOL;
+
+                $docs.= ($requestingOneClass ? '':'<hr /> ').PHP_EOL;
 
                 if( $class->isDeprecated() ) {
                     $docs .= '### <strike>'.$class->generateTitle().'</strike>'.PHP_EOL.PHP_EOL.
