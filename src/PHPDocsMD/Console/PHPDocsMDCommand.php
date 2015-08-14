@@ -104,7 +104,7 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 
         foreach($classCollection as $ns => $classes) {
             foreach($classes as $className) {
-                $docs = '';
+                $docs = '# '.$className.PHP_EOL.PHP_EOL;
                 $class = $this->getClassEntity($className);
 
                 if( $class->hasIgnoreTag() )
@@ -118,9 +118,9 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
                 //$tableGenerator->openTable();
                 foreach($class->getFunctions() as $func) {
                     // $tableGenerator->addFunc($func);
-                    $docs .= '### '.$func->getName().PHP_EOL;
+                    $docs .= '## '.$func->getName().' `'.$func->getReturnType().'`'.PHP_EOL;
                     $docs .= $func->getDescription().PHP_EOL.PHP_EOL;
-                    $docs .= $func->getExample().PHP_EOL;
+                    $docs .= MDTableGenerator::formatExampleComment( $func->getExample() ).PHP_EOL;
                 }
 
 

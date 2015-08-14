@@ -146,25 +146,29 @@ class MDTableGenerator {
             $example = current( array_slice(explode('<code>', $example), 1) );
         }
 
-        if( preg_match('/(\n       )/', $example) ) {
-            $example = preg_replace('/(\n       )/', "\n", $example);
-        }
-        elseif( preg_match('/(\n    )/', $example) ) {
-            $example = preg_replace('/(\n    )/', "\n", $example);
-        } else {
-            $example = preg_replace('/(\n   )/', "\n", $example);
-        }
+        $example = str_replace("\t```", '```', $example);
+        $example = str_replace("\t```", '```', $example);
+
+        // if( preg_match('/(\n       )/', $example) ) {
+        //     $example = preg_replace('/(\n       )/', "\n", $example);
+        // } elseif( preg_match('/(\n    )/', $example) ) {
+        //     $example = preg_replace('/(\n    )/', "\n", $example);
+        // } else {
+        //     $example = preg_replace('/(\n   )/', "\n", $example);
+        // }
         $type = '';
 
         // A very naive analysis of the programming language used in the comment
         if( strpos($example, '<?php') !== false ) {
             $type = 'php';
-        }
-        elseif( strpos($example, 'var ') !== false && strpos($example, '</') === false ) {
+        } elseif( strpos($example, 'var ') !== false && strpos($example, '</') === false ) {
             $type = 'js';
+        } elseif (strpos($example, '{{') !== false ) {
+            $type = 'twig';
         }
 
-        return sprintf("```%s\n%s\n````", $type, trim($example));
+        //$example = sprintf("```%s\n%s\n```", $type, trim($example));
+        return $example;
     }
 
     /**
