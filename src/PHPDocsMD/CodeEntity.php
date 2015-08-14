@@ -63,6 +63,8 @@ class CodeEntity {
         return $this->description;
     }
 
+   
+
     /**
      * @param string $name
      */

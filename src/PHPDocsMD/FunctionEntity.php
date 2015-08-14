@@ -31,6 +31,11 @@ class FunctionEntity extends CodeEntity {
     /**
      * @var bool
      */
+    private $hasInternalTag = false;
+
+    /**
+     * @var bool
+     */
     private $isStatic = false;
 
     /**
@@ -59,6 +64,18 @@ class FunctionEntity extends CodeEntity {
             return $this->abstract;
         } else {
             $this->abstract = (bool)$toggle;
+        }
+    }
+
+     /**
+     * @return boolean
+     */
+    public function hasInternalTag( $toggle = null )
+    {
+        if( $toggle === null ) {
+            return $this->hasInternalTag;
+        } else {
+            $this->hasInternalTag = (bool)$toggle;
         }
     }
 

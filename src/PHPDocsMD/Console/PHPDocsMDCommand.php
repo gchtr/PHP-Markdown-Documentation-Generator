@@ -104,8 +104,9 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 
         foreach($classCollection as $ns => $classes) {
             foreach($classes as $className) {
-                $docs = '# '.$className.PHP_EOL.PHP_EOL;
+                $docs = '# '.$className.PHP_EOL;
                 $class = $this->getClassEntity($className);
+                $docs .= $class->getDescription().PHP_EOL.PHP_EOL;
 
                 if( $class->hasIgnoreTag() )
                     continue;
@@ -118,9 +119,23 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
                 //$tableGenerator->openTable();
                 foreach($class->getFunctions() as $func) {
                     // $tableGenerator->addFunc($func);
-                    $docs .= '## '.$func->getName().' `'.$func->getReturnType().'`'.PHP_EOL;
-                    $docs .= $func->getDescription().PHP_EOL.PHP_EOL;
-                    $docs .= MDTableGenerator::formatExampleComment( $func->getExample() ).PHP_EOL;
+                    if ( !$func->hasInternalTag() ) {
+                        $docs .= '## '.$func->getName().PHP_EOL;
+                        $docs .= '**returns:** `'.$func->getReturnType().'`'.PHP_EOL.PHP_EOL;
+                        $docs .= $func->getDescription().PHP_EOL.PHP_EOL;
+                        if ( is_array($func->getParams()) && count($func->getParams()) ){
+                            $docs .= 'Type | Name | Description'.PHP_EOL;
+                            $docs .= '---- | ---- | -----------'.PHP_EOL;
+                        }
+                        foreach( $func->getParams() as $param ) {
+                            $docs .= $param->getType() . ' | ' . $param->getName() . ' | ' . $param->getDescription().PHP_EOL;
+                        }
+                        if ( is_array($func->getParams()) && count($func->getParams()) ) {
+                            $docs .= PHP_EOL;
+                        }
+                        $docs .= MDTableGenerator::formatExampleComment( $func->getExample() ).PHP_EOL;
+                    }
+                    
                 }
 
 

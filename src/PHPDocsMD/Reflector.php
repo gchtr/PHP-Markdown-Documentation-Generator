@@ -78,6 +78,7 @@ class Reflector implements ReflectorInterface
         $func->setReturnType($tags['return']);
         $func->setParams(array_values($params));
         $func->isStatic($method->isStatic());
+        $func->hasInternalTag(isset($tags['internal']));
         $func->setVisibility($method->isPublic() ? 'public' : 'protected');
         $func->isAbstract($method->isAbstract());
         $func->setClass($class->getName());
