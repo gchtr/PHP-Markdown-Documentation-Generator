@@ -69,6 +69,14 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
         $properties = $class->getProperties();
         $functions = $class->getFunctions();
         $things = array_merge($properties, $functions);
+
+
+        usort($things, function($a, $b){
+            if ($a->getName() == $b->getName()) {
+                return 0;
+            }
+        return ($a->getName() < $b->getName()) ? -1 : 1;
+        });
         if (is_array($things) && count($things)) {
             $docs .= 'Name | Type | Description'.PHP_EOL;
             $docs .= '---- | ---- | -----------'.PHP_EOL;
@@ -76,7 +84,7 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
         foreach( $things as $ce ) {
             if ( $ce->hasTag('api') ) {
                 if (get_class($ce) == 'PHPDocsMD\FunctionEntity') {
-                    $docs .= $ce->getName() . ' | ' . $ce->getReturnType() . ' | ' . $ce->getDescription() . PHP_EOL;
+                    $docs .= '['.$ce->getName().'](#'.$ce->getName().')' . ' | ' . $ce->getReturnType() . ' | ' . $ce->getDescription() . PHP_EOL;
                 } else {
                     $docs .= $ce->getName() . ' | ' . $ce->getType() . ' | ' . $ce->getDescription() . PHP_EOL;
                 }
@@ -146,6 +154,7 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
                     // $tableGenerator->addFunc($func);
                     if ( !$func->hasInternalTag() ) {
                         $docs .= '## '.$func->getName().PHP_EOL;
+                        $docs .= '`'.$func->getDefinition().'`'.PHP_EOL.PHP_EOL;
                         $docs .= '**returns:** `'.$func->getReturnType().'`'.PHP_EOL.PHP_EOL;
                         $docs .= $func->getDescription().PHP_EOL.PHP_EOL;
                         if ( is_array($func->getParams()) && count($func->getParams()) ){

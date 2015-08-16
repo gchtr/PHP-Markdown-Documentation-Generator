@@ -151,5 +151,20 @@ class FunctionEntity extends CodeEntity {
         return $this->class;
     }
     
+    /**
+     * @return string
+     */
+    public function getDefinition() {
+        $str = $this->getName().'(';
+        foreach($this->getParams() as $param) {
+            $str .= ' '.$param->getType(). ' '.$param->getName();
+            if ($param->getDefault()) {
+                $str .= '='.str_replace("'", '"', $param->getDefault());
+            }
+            $str .= ',';
+        }
+        $str .= ')';
+        return $str;
+    }
 }
 
