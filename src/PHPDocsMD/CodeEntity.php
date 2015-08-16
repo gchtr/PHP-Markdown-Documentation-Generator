@@ -33,6 +33,11 @@ class CodeEntity {
      */
     private $example = '';
 
+    /**
+     * @var array
+     */
+    private $tags = array();
+
 
     /**
      * @param bool|null $toggle
@@ -111,5 +116,29 @@ class CodeEntity {
     public function getExample()
     {
         return $this->example;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasTag( $tag ){
+        if ( isset( $this->tags[$tag] ) ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function setTags( $tags ){
+        $this->tags = $tags;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getTags(){
+        return $this->tags;
     }
 }

@@ -39,6 +39,11 @@ class ClassEntity extends CodeEntity {
     private $interfaces = array();
 
     /**
+     * @var array
+     */
+    private $properties = array();
+
+    /**
      * @param null|bool $toggle
      */
     public function isAbstract($toggle=null)
@@ -188,5 +193,21 @@ class ClassEntity extends CodeEntity {
     {
         $title = $this->generateTitle();
         return strtolower(str_replace(array(':', ' ', '\\', '(', ')'), array('', '-', '', '', ''), $title));
+    }
+
+    /**
+     * @param string $properties
+     */
+    public function setProperties($properties)
+    {
+        $this->properties = $properties;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProperties()
+    {
+        return $this->properties;
     }
 }

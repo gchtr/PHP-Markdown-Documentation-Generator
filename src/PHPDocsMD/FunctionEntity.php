@@ -150,5 +150,6 @@ class FunctionEntity extends CodeEntity {
     {
         return $this->class;
     }
+    
 }
 

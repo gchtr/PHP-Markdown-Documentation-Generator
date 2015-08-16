@@ -63,6 +63,28 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
             );
     }
 
+    protected function generateClassAPITable( $class, $tag = 'api' ) {
+        $docs = '';
+        $properties = array();
+        $properties = $class->getProperties();
+        $functions = $class->getFunctions();
+        $things = array_merge($properties, $functions);
+        if (is_array($things) && count($things)) {
+            $docs .= 'Name | Type | Description'.PHP_EOL;
+            $docs .= '---- | ---- | -----------'.PHP_EOL;
+        }
+        foreach( $things as $ce ) {
+            if ( $ce->hasTag('api') ) {
+                if (get_class($ce) == 'PHPDocsMD\FunctionEntity') {
+                    $docs .= $ce->getName() . ' | ' . $ce->getReturnType() . ' | ' . $ce->getDescription() . PHP_EOL;
+                } else {
+                    $docs .= $ce->getName() . ' | ' . $ce->getType() . ' | ' . $ce->getDescription() . PHP_EOL;
+                }
+            }
+        }
+        return $docs;
+    }
+
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -107,6 +129,9 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
                 $docs = '# '.$className.PHP_EOL;
                 $class = $this->getClassEntity($className);
                 $docs .= $class->getDescription().PHP_EOL.PHP_EOL;
+                $docs .= $class->getExample().PHP_EOL.PHP_EOL;
+
+                $docs .= $this->generateClassAPITable($class, 'api');
 
                 if( $class->hasIgnoreTag() )
                     continue;
@@ -124,11 +149,11 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
                         $docs .= '**returns:** `'.$func->getReturnType().'`'.PHP_EOL.PHP_EOL;
                         $docs .= $func->getDescription().PHP_EOL.PHP_EOL;
                         if ( is_array($func->getParams()) && count($func->getParams()) ){
-                            $docs .= 'Type | Name | Description'.PHP_EOL;
+                            $docs .= 'Name | Type | Description'.PHP_EOL;
                             $docs .= '---- | ---- | -----------'.PHP_EOL;
                         }
                         foreach( $func->getParams() as $param ) {
-                            $docs .= $param->getType() . ' | ' . $param->getName() . ' | ' . $param->getDescription().PHP_EOL;
+                            $docs .= $param->getName() . ' | ' . $param->getType() . ' | ' . $param->getDescription().PHP_EOL;
                         }
                         if ( is_array($func->getParams()) && count($func->getParams()) ) {
                             $docs .= PHP_EOL;

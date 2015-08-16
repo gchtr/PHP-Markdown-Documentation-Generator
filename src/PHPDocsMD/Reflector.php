@@ -45,7 +45,30 @@ class Reflector implements ReflectorInterface
         ksort($protectedFunctions);
         $class->setFunctions(array_values(array_merge($publicFunctions, $protectedFunctions)));
 
+        //get variables/properties
+        $properties = $classReflection->getProperties();
+        foreach($properties as &$prop) {
+            $prop = $this->createPropertyEntity($prop, $class);
+        }
+        $class->setProperties($properties);
         return $class;
+    }
+
+    protected function createPropertyEntity(\ReflectionProperty $property, ClassEntity $class)
+    {
+        $prop = new ParamEntity();
+        $tags = $this->createEntity($property, $class);
+        $propName = $property->getName();
+
+        $docs = isset($tags['var']['propName']) ? $tags['var'][$propName] : array();
+        //$prop = $this->createParameterEntity($property, $docs);
+        $declaredType = self::getPropertyType($tags);
+        $propDescription = self::getPropertyDescription($tags);
+        $prop->setName($propName);
+        $prop->setDescription($propDescription);
+        $prop->setType($declaredType);
+        $prop->setTags($tags);
+        return $prop;
     }
 
     /**
@@ -82,6 +105,7 @@ class Reflector implements ReflectorInterface
         $func->setVisibility($method->isPublic() ? 'public' : 'protected');
         $func->isAbstract($method->isAbstract());
         $func->setClass($class->getName());
+        $func->setTags($tags);
 
         return $func;
     }
@@ -174,6 +198,8 @@ class Reflector implements ReflectorInterface
         return $param;
     }
 
+
+
     /**
      * Tries to find out if the type of the given parameter. Will
      * return empty string if not possible.
@@ -217,6 +243,23 @@ class Reflector implements ReflectorInterface
         }
 
         return $type;
+    }
+
+    static function getPropertyType(array $tags)
+    {
+        if ( isset($tags['var']) && $tags['var'] ) {
+            $words = explode(' ', trim($tags['var']));
+            return $words[0];
+        }
+    }
+
+    static function getPropertyDescription(array $tags) {
+        if ( isset($tags['var']) && $tags['var'] ) {
+            $words = explode(' ', trim($tags['var']));
+            array_shift($words);
+            $words = implode(' ', $words);
+            return $words;
+        }
     }
 
     /**
