@@ -50,18 +50,18 @@ class Reflector implements ReflectorInterface
         foreach($properties as &$prop) {
             $prop = $this->createPropertyEntity($prop, $class);
         }
-        $class->setProperties($properties);
+        // $class->setProperties($properties);
         return $class;
     }
 
     protected function createPropertyEntity(\ReflectionProperty $property, ClassEntity $class)
     {
+        $prop = null;
         $prop = new ParamEntity();
-        $tags = $this->createEntity($property, $class);
+        $tags = $this->createEntity($property, $prop);
         $propName = $property->getName();
 
         $docs = isset($tags['var']['propName']) ? $tags['var'][$propName] : array();
-        //$prop = $this->createParameterEntity($property, $docs);
         $declaredType = self::getPropertyType($tags);
         $propDescription = self::getPropertyDescription($tags);
         $prop->setName($propName);
