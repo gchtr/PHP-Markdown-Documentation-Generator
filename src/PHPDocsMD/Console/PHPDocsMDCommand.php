@@ -81,7 +81,6 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
             $docs .= 'Name | Type | Description'.PHP_EOL;
             $docs .= '---- | ---- | -----------'.PHP_EOL;
         }
-        $docs .= PHP_EOL;
         foreach( $things as $ce ) {
             if ( $ce->hasTag('api') ) {
                 if (get_class($ce) == 'PHPDocsMD\FunctionEntity') {
@@ -91,6 +90,7 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
                 }
             }
         }
+        $docs .= PHP_EOL;
         return $docs;
     }
 
