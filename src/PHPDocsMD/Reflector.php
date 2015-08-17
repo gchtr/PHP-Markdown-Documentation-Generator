@@ -50,7 +50,7 @@ class Reflector implements ReflectorInterface
         foreach($properties as &$prop) {
             $prop = $this->createPropertyEntity($prop, $class);
         }
-        // $class->setProperties($properties);
+        $class->setProperties($properties);
         return $class;
     }
 
