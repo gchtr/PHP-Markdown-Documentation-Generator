@@ -170,7 +170,8 @@ class FunctionEntity extends CodeEntity {
     /**
      * @return string
      */
-    public function getDefinition() {
+    public function getDefinition()
+    {
         $str = $this->getName().'(';
         $i = 0;
         foreach($this->getParams() as $param) {

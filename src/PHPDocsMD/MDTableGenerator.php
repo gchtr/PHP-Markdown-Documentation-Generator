@@ -167,6 +167,10 @@ class MDTableGenerator {
             $type = 'twig';
         }
 
+        $example = str_replace('```php', '###### PHP'.PHP_EOL.'```php'.PHP_EOL.'<?php', $example);
+        $example = str_replace('```twig', '###### Twig'.PHP_EOL.'```twig', $example);
+        $example = str_replace('```html', '###### HTML'.PHP_EOL.'```html', $example);
+
         //$example = sprintf("```%s\n%s\n```", $type, trim($example));
         return $example;
     }
