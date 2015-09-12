@@ -89,7 +89,7 @@ class Reflector implements ReflectorInterface
         foreach ($method->getParameters() as $param) {
             $paramName = '$'.$param->getName();
             $docs = isset($tags['params'][$paramName]) ? $tags['params'][$paramName] : array();
-            $params[$param->getName()] = $this->createParameterEntity($param, $docs);
+            //$params[$param->getName()] = $this->createParameterEntity($param, $docs);
         }
 
         if (empty($tags['return'])) {
@@ -98,7 +98,9 @@ class Reflector implements ReflectorInterface
 
         $tags['return'] = $this->sanitizeDeclaration($tags['return'], $method->getDeclaringClass()->getNamespaceName());
 
-        $func->setReturnType($tags['return']);
+        $return = explode(' ', $tags['return']);
+        $func->setReturnType(array_shift($return));
+        $func->setReturnDesc(implode(' ', $return));
         $func->setParams(array_values($params));
         $func->isStatic($method->isStatic());
         $func->hasInternalTag(isset($tags['internal']));
@@ -388,7 +390,7 @@ class Reflector implements ReflectorInterface
     {
         $param_desc = '';
         $param_type = '';
-        
+
         if( strpos($words[1], '$') === 0) {
             $param_name = $words[1];
             $param_type = 'mixed';

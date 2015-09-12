@@ -84,7 +84,7 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
         foreach( $things as $ce ) {
             if ( $ce->hasTag('api') ) {
                 if (get_class($ce) == 'PHPDocsMD\FunctionEntity') {
-                    $docs .= '['.$ce->getName().'](#'.$ce->getName().')' . ' | ' . $ce->getReturnType() . ' | ' . $ce->getDescription() . PHP_EOL;
+                    $docs .= '['.$ce->getName().'](#'.$ce->getName().')' . ' | ' . $ce->getReturnType() . ' | ' . $ce->getReturnDesc() . PHP_EOL;
                 } else {
                     $docs .= $ce->getName() . ' | ' . $ce->getType() . ' | ' . $ce->getDescription() . PHP_EOL;
                 }
@@ -154,10 +154,19 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
                 foreach($class->getFunctions() as $func) {
                     // $tableGenerator->addFunc($func);
                     if ( !$func->hasInternalTag() ) {
-                        $docs .= '## '.$func->getName().PHP_EOL;
+                    	$name = $func->getName();
+                    	if ($func->isDeprecated()) {
+                    		$name = '<strike>'.$func->getName().'</strike>';
+                    	}
+                        $docs .= '## '.$name.PHP_EOL;
+                        if ( $func->isDeprecated() ) {
+                        	$docs .= '> **DEPRECATED** '.$func->getDeprecationMessage().PHP_EOL;
+                        }
                         $docs .= '`'.$func->getDefinition().'`'.PHP_EOL.PHP_EOL;
-                        $docs .= '**returns:** `'.$func->getReturnType().'`'.PHP_EOL.PHP_EOL;
-                        $docs .= $func->getDescription().PHP_EOL.PHP_EOL;
+                        $docs .= '**returns:** `'.$func->getReturnType().'` '.$func->getReturnDesc().PHP_EOL.PHP_EOL;
+                        if ($func->getDescription()) {
+                        	$docs .= $func->getDescription().PHP_EOL.PHP_EOL;
+                    	}
                         if ( is_array($func->getParams()) && count($func->getParams()) ){
                             $docs .= 'Name | Type | Description'.PHP_EOL;
                             $docs .= '---- | ---- | -----------'.PHP_EOL;
@@ -168,9 +177,9 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
                         if ( is_array($func->getParams()) && count($func->getParams()) ) {
                             $docs .= PHP_EOL;
                         }
-                        $docs .= MDTableGenerator::formatExampleComment( $func->getExample() ).PHP_EOL;
+                        $docs .= MDTableGenerator::formatExampleComment( $func->getExample() ).PHP_EOL.PHP_EOL;
                     }
-                    
+
                 }
 
 

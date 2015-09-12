@@ -104,6 +104,22 @@ class FunctionEntity extends CodeEntity {
     }
 
     /**
+     * @param string $returnDesc
+     */
+    public function setReturnDesc($returnDesc)
+    {
+        $this->returnDesc = $returnDesc;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReturnDesc()
+    {
+        return $this->returnDesc;
+    }
+
+    /**
      * @param string $returnType
      */
     public function setReturnType($returnType)
@@ -150,7 +166,7 @@ class FunctionEntity extends CodeEntity {
     {
         return $this->class;
     }
-    
+
     /**
      * @return string
      */
@@ -166,7 +182,7 @@ class FunctionEntity extends CodeEntity {
                 $str .= '='.str_replace("'", '"', $param->getDefault());
             }
             $i++;
-            
+
         }
         $str .= ' )';
         return $str;
