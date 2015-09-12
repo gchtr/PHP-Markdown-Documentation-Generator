@@ -86,10 +86,11 @@ class Reflector implements ReflectorInterface
         }
 
         $params = array();
+        $myparams = $method->getParameters();
         foreach ($method->getParameters() as $param) {
             $paramName = '$'.$param->getName();
             $docs = isset($tags['params'][$paramName]) ? $tags['params'][$paramName] : array();
-            //$params[$param->getName()] = $this->createParameterEntity($param, $docs);
+            $params[$param->getName()] = $this->createParameterEntity($param, $docs);
         }
 
         if (empty($tags['return'])) {
@@ -170,7 +171,7 @@ class Reflector implements ReflectorInterface
         $varName = '$'.$reflection->getName();
 
         if( !empty($docs) ) {
-            $docs['default'] = $def;
+            $docs['default'] = str_replace('`', '', $def);
             if( $type == 'mixed' && $def == 'null' && strpos($docs['type'], '\\') === 0 ) {
                 $type = false;
             }
