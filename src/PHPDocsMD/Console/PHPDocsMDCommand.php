@@ -160,7 +160,7 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 						}
 						$docs .= '## '.$name.PHP_EOL;
 						if ( $func->isDeprecated() ) {
-							$docs .= '_**DEPRECATED** '.$func->getDeprecationMessage().'_'.PHP_EOL.PHP_EOL;
+							$docs .= '**DEPRECATED** '.$func->getDeprecationMessage().PHP_EOL.PHP_EOL;
 						}
 						$docs .= '`'.$func->getDefinition().'`'.PHP_EOL.PHP_EOL;
 						$docs .= '**returns:** `'.$func->getReturnType().'` '.$func->getReturnDesc().PHP_EOL.PHP_EOL;
