@@ -189,15 +189,6 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 					$docs .= '### <strike>'.$class->generateTitle().'</strike>'.PHP_EOL.PHP_EOL.
 							'> **DEPRECATED** '.$class->getDeprecationMessage().PHP_EOL.PHP_EOL;
 				}
-				else {
-					$docs .= '### '.$class->generateTitle().PHP_EOL.PHP_EOL;
-					if( $class->getDescription() )
-						$docs .= '> '.$class->getDescription().PHP_EOL.PHP_EOL;
-				}
-
-				if( $example = $class->getExample() ) {
-					$docs .= '###### Example' . PHP_EOL . MDTableGenerator::formatExampleComment($example) .PHP_EOL.PHP_EOL;
-				}
 
 				$docs .= $tableGenerator->getTable().PHP_EOL;
 
