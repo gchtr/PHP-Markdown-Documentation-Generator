@@ -70,7 +70,6 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 		$functions = $class->getFunctions();
 		$things = array_merge($properties, $functions);
 
-
 		usort($things, function($a, $b){
 			if ($a->getName() == $b->getName()) {
 				return 0;
@@ -78,15 +77,15 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 		return ($a->getName() < $b->getName()) ? -1 : 1;
 		});
 		if (is_array($things) && count($things)) {
-			$docs .= 'Name | Type | Description'.PHP_EOL;
-			$docs .= '---- | ---- | -----------'.PHP_EOL;
+			$docs .= '| Name | Type | Returns/Description |' . PHP_EOL;
+			$docs .= '| --- | --- | --- |' . PHP_EOL;
 		}
 		foreach( $things as $ce ) {
 			if ( $ce->hasTag('api') ) {
 				if (get_class($ce) == 'PHPDocsMD\FunctionEntity') {
-					$docs .= '['.$ce->getName().'](#'.$ce->getName().')' . ' | ' . $ce->getReturnType() . ' | ' . $ce->getReturnDesc() . PHP_EOL;
+					$docs .= '| [' . $ce->getName() . '](#' . $ce->getName() . ')' . ' | ' . $ce->getReturnType() . ' | ' . $ce->getReturnDesc() . ' |' . PHP_EOL;
 				} else {
-					$docs .= $ce->getName() . ' | ' . $ce->getType() . ' | ' . $ce->getDescription() . PHP_EOL;
+					$docs .= $ce->getName() . ' | ' . $ce->getType() . ' | ' . $ce->getDescription() . ' |' . PHP_EOL;
 				}
 			}
 		}
@@ -102,7 +101,6 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-
 		$classes = $input->getArgument(self::ARG_CLASS);
 		$bootstrap = $input->getOption(self::OPT_BOOTSTRAP);
 		$ignore = explode(',', $input->getOption(self::OPT_IGNORE));
@@ -168,22 +166,20 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 							$docs .= $func->getDescription().PHP_EOL.PHP_EOL;
 						}
 						if ( is_array($func->getParams()) && count($func->getParams()) ){
-							$docs .= 'Name | Type | Description'.PHP_EOL;
-							$docs .= '---- | ---- | -----------'.PHP_EOL;
+							$docs .= '| Name | Type | Description |'.PHP_EOL;
+							$docs .= '| --- | --- | --- |'.PHP_EOL;
 						}
 						foreach( $func->getParams() as $param ) {
-							$docs .= $param->getName() . ' | ' . $param->getType() . ' | ' . $param->getDescription().PHP_EOL;
+							$docs .= '| ' . $param->getName() . ' | ' . $param->getType() . ' | ' . $param->getDescription() . ' |' . PHP_EOL;
 						}
 						if ( is_array($func->getParams()) && count($func->getParams()) ) {
 							$docs .= PHP_EOL;
 						}
 						$docs .= MDTableGenerator::formatExampleComment( $func->getExample() ).PHP_EOL.PHP_EOL;
 					}
-
 				}
 
-
-				$docs.= ($requestingOneClass ? '':'<hr /> ').PHP_EOL;
+				$docs.= ($requestingOneClass ? '' : '<hr /> ').PHP_EOL;
 
 				if( $class->isDeprecated() ) {
 					$docs .= '### <strike>'.$class->generateTitle().'</strike>'.PHP_EOL.PHP_EOL.
@@ -225,6 +221,7 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 		asort($classLinks);
 		$classLinks = array_reverse($classLinks, true);
 		$docString = implode(PHP_EOL, $body);
+
 		foreach($classLinks as $anchor => $className) {
 			$link = sprintf('[%s](#%s)', $className, $anchor);
 			$find = array('<em>'.$className, '/'.$className);
