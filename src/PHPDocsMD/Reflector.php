@@ -328,8 +328,18 @@ class Reflector implements ReflectorInterface
      */
     private function getCleanDocComment($reflection)
     {
-        $comment = str_replace(array('/*', '*/'), '', $reflection->getDocComment());
-        return trim(trim(preg_replace('/([\s|^]\*\s)/', '', $comment)), '*');
+    	$comment = $reflection->getDocComment();
+        $comment = str_replace(array('/**', '*/'), '', $comment);
+
+        /**
+		 * Replace everything that’s in front of the actual text for a comment with a newline.
+		 * DocBlocks for methods normally contain a tab character, so we need to account for that, too.
+		 * This regex also keeps new lines inside comments.
+		 */
+        $comment = preg_replace('/(\n?\t?[\s|^]\*\s)/', "\n", $comment);
+		$comment = trim($comment);
+
+    	return $comment;
     }
 
     /**
@@ -341,30 +351,48 @@ class Reflector implements ReflectorInterface
     private function extractTagsFromComment($comment, $current_tag='description', $reflection)
     {
         $ns = $reflection instanceof \ReflectionClass ? $reflection->getNamespaceName() : $reflection->getDeclaringClass()->getNamespaceName();
-        $tags = array($current_tag=>'');
+        $tags = array($current_tag => '');
+		$lines = explode(PHP_EOL, $comment);
 
-        foreach(explode(PHP_EOL, $comment) as $line) {
-
-            if( $current_tag != 'example' )
+        foreach ($lines as $line) {
+            if ($current_tag !== 'example') {
                 $line = trim($line);
+            }
 
             $words = explode(' ', trim($line));
 
-            if( strpos($words[0], '@') === false ) {
+	        // Remove empty array elements and reindex.
+	        $words = array_values(array_filter($words));
+
+            if (strpos($words[0], '@') === false) {
                 // Append to tag
                 $joinWith = $current_tag == 'example' ? PHP_EOL : ' ';
-                $tags[$current_tag] .= $joinWith . $line;
+
+                if ($current_tag !== 'param') {
+                    $tags[$current_tag] .= $joinWith . $line;
+
+				// Add description to parameter
+                } elseif (isset($current_param_name) && $current_param_name)  {
+                	$tags['params'][$current_param_name]['description'] .= $joinWith . $line;
+                }
             }
-            elseif( $words[0] == '@param' ) {
+            elseif ($words[0] == '@param') {
+            	// Start new tag
+                $current_tag = substr($words[0], 1);
+
                 // Get parameter declaration
-                if( $paramData = $this->figureOutParamDeclaration($words, $ns) ) {
+                if ($paramData = $this->figureOutParamDeclaration($words, $ns)) {
                     list($name, $data) = $paramData;
                     $tags['params'][$name] = $data;
+
+                    $current_param_name = $name;
                 }
             }
             else {
                 // Start new tag
                 $current_tag = substr($words[0], 1);
+                $current_param_name = null;
+
                 array_splice($words, 0 ,1);
                 if( empty($tags[$current_tag]) ) {
                     $tags[$current_tag] = '';
