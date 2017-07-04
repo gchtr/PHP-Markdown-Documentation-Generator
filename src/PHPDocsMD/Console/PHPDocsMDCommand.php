@@ -83,9 +83,9 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 		foreach( $things as $ce ) {
 			if ( $ce->hasTag('api') ) {
 				if (get_class($ce) == 'PHPDocsMD\FunctionEntity') {
-					$docs .= '| [' . $ce->getName() . '](#' . $ce->getName() . ')' . ' | ' . $ce->getReturnType() . ' | ' . $ce->getReturnDesc() . ' |' . PHP_EOL;
+					$docs .= '| [' . $ce->getName() . '](#' . $ce->getName() . ')' . ' | `' . $ce->getReturnType() . '` | ' . $ce->getReturnDesc() . ' |' . PHP_EOL;
 				} else {
-					$docs .= $ce->getName() . ' | ' . $ce->getType() . ' | ' . $ce->getDescription() . ' |' . PHP_EOL;
+					$docs .= $ce->getName() . ' | `' . $ce->getType() . '` | ' . $ce->getDescription() . ' |' . PHP_EOL;
 				}
 			}
 		}
@@ -170,7 +170,7 @@ class PHPDocsMDCommand extends \Symfony\Component\Console\Command\Command {
 							$docs .= '| --- | --- | --- |'.PHP_EOL;
 						}
 						foreach( $func->getParams() as $param ) {
-							$docs .= '| ' . $param->getName() . ' | ' . $param->getType() . ' | ' . $param->getDescription() . ' |' . PHP_EOL;
+							$docs .= '| ' . $param->getName() . ' | `' . $param->getType() . '` | ' . $param->getDescription() . ' |' . PHP_EOL;
 						}
 						if ( is_array($func->getParams()) && count($func->getParams()) ) {
 							$docs .= PHP_EOL;

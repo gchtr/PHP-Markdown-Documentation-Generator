@@ -8,7 +8,6 @@ namespace PHPDocsMD;
  */
 class Reflector implements ReflectorInterface
 {
-
     /**
      * @var string
      */
@@ -97,11 +96,15 @@ class Reflector implements ReflectorInterface
             $tags['return'] = $this->guessReturnTypeFromFuncName($func->getName());
         }
 
-        $tags['return'] = $this->sanitizeDeclaration($tags['return'], $method->getDeclaringClass()->getNamespaceName());
-
         $return = explode(' ', $tags['return']);
-        $func->setReturnType(array_shift($return));
-        $func->setReturnDesc(implode(' ', $return));
+
+        $return_type = array_shift($return);
+        $return_type = $this->sanitizeDeclaration($return_type, $method->getDeclaringClass()->getNamespaceName());
+
+        $return_desc = trim(implode(' ', $return));
+
+        $func->setReturnType($return_type);
+        $func->setReturnDesc($return_desc);
         $func->setParams(array_values($params));
         $func->isStatic($method->isStatic());
         $func->hasInternalTag(isset($tags['internal']));
@@ -129,7 +132,7 @@ class Reflector implements ReflectorInterface
     /**
      * @param \ReflectionParameter $reflection
      * @param array $docs
-     * @return FunctionEntity
+     * @return ParamEntity
      */
     private function createParameterEntity(\ReflectionParameter $reflection, $docs)
     {
@@ -273,14 +276,19 @@ class Reflector implements ReflectorInterface
     {
         $mixed = array('get', 'load', 'fetch', 'find', 'create');
         $bool = array('is', 'can', 'has', 'have', 'should');
-        foreach($mixed as $prefix) {
-            if( strpos($name, $prefix) === 0 )
+
+        foreach ($mixed as $prefix) {
+            if (strpos($name, $prefix) === 0 ) {
                 return 'mixed';
+			}
         }
-        foreach($bool as $prefix) {
-            if( strpos($name, $prefix) === 0 )
+
+        foreach ($bool as $prefix) {
+            if (strpos($name, $prefix) === 0 ) {
                 return 'bool';
+			}
         }
+
         return 'void';
     }
 
@@ -436,7 +444,7 @@ class Reflector implements ReflectorInterface
                 $param_desc = join(' ', $words);
             }
 
-            $param_type = $this->sanitizeDeclaration($param_type, $ns, '|');
+            $param_type = $this->sanitizeDeclaration($param_type, $ns);
             $data = array(
                 'description' => $param_desc,
                 'name' => $param_name,
@@ -494,17 +502,20 @@ class Reflector implements ReflectorInterface
      * @param $ns
      * @return string
      */
-    private function sanitizeDeclaration($param_type, $ns, $delim='|')
+    private function sanitizeDeclaration($param_type, $ns, $delim = '|')
     {
         $parts = explode($delim, $param_type);
-        foreach($parts as $i=>$p) {
+
+        foreach($parts as $i => $p) {
             if ($this->shouldPrefixWithNamespace($p)) {
                 $p = ClassEntity::sanitizeClassName('\\' . trim($ns, '\\') . '\\' . $p);
             } elseif ($this->isClassReference($p)) {
                 $p = ClassEntity::sanitizeClassName($p);
             }
+
             $parts[$i] = $p;
         }
+
         return implode('/', $parts);
     }
 }
